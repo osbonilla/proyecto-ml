@@ -1,0 +1,46 @@
+# ============================================================
+# Dockerfile — Backend FastAPI (GeoIntent Classifier)
+# ============================================================
+
+FROM python:3.11-slim
+
+# Variables de entorno
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MODEL_PATH=/app/models/saved/best_model.pkl \
+    ENCODER_PATH=/app/models/saved/label_encoder.pkl
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Dependencias del sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependencias Python (primero para cache de Docker)
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copiar código fuente
+COPY src/ ./src/
+COPY backend/ ./backend/
+COPY main.py .
+
+# Copiar modelos si existen (se montan como volumen en producción)
+COPY models/ ./models/
+
+# Crear directorios necesarios
+RUN mkdir -p data/raw data/processed data/augmented \
+             models/saved reports/figures reports/metrics
+
+# Puerto de la API
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+# Comando de inicio
+CMD ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

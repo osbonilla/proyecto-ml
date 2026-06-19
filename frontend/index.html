@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoIntent Classifier — Sistema Multiagente ArcGIS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <span class="header-icon">🌍</span>
+        <div>
+          <h1 class="header-title">GeoIntent Classifier</h1>
+          <p class="header-subtitle">Sistema Multiagente para Análisis Geoespacial — ArcGIS</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Conectando...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- INPUT SECTION -->
+    <section class="card input-card">
+      <h2 class="card-title">🔍 Clasificador de Intención</h2>
+      <p class="card-desc">
+        Escribe una consulta geoespacial en lenguaje natural. El clasificador ML detectará
+        el intent y determinará qué agente del sistema multiagente debe activarse.
+      </p>
+
+      <div class="input-group">
+        <textarea
+          id="queryInput"
+          class="textarea"
+          rows="3"
+          placeholder="Ej: ¿Cuántos kilómetros hay entre Quito y Guayaquil?"
+        ></textarea>
+        <button class="btn btn-primary" id="classifyBtn" onclick="classify()">
+          <span>⚡ Clasificar Intent</span>
+        </button>
+      </div>
+
+      <!-- EJEMPLOS -->
+      <div class="examples">
+        <p class="examples-label">Ejemplos rápidos:</p>
+        <div class="examples-grid" id="examplesGrid"></div>
+      </div>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="card result-card" id="resultCard" style="display:none;">
+      <h2 class="card-title">📊 Resultado</h2>
+      <div class="result-grid">
+
+        <div class="result-main">
+          <div class="intent-badge" id="intentBadge">
+            <span class="intent-icon" id="intentIcon"></span>
+            <div>
+              <p class="intent-label">Intent detectado</p>
+              <p class="intent-value" id="intentValue"></p>
+            </div>
+          </div>
+
+          <div class="agent-box" id="agentBox">
+            <p class="agent-label">🤖 Agente activado</p>
+            <p class="agent-value" id="agentValue"></p>
+          </div>
+
+          <div class="confidence-box" id="confidenceBox">
+            <p class="conf-label">Confianza de predicción</p>
+            <div class="conf-bar-wrap">
+              <div class="conf-bar" id="confBar"></div>
+            </div>
+            <p class="conf-pct" id="confPct"></p>
+          </div>
+        </div>
+
+        <!-- PROBABILIDADES -->
+        <div class="proba-section" id="probaSection">
+          <p class="proba-title">Distribución de probabilidades</p>
+          <div id="probaChart"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ARQUITECTURA -->
+    <section class="card arch-card">
+      <h2 class="card-title">🏗️ Arquitectura del Sistema</h2>
+      <div class="arch-flow">
+        <div class="arch-step">
+          <div class="arch-icon">💬</div>
+          <p class="arch-step-title">Consulta</p>
+          <p class="arch-step-desc">Lenguaje natural del usuario</p>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-step">
+          <div class="arch-icon">🧹</div>
+          <p class="arch-step-title">Preprocesamiento</p>
+          <p class="arch-step-desc">Limpieza y normalización</p>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-step">
+          <div class="arch-icon">📊</div>
+          <p class="arch-step-title">TF-IDF</p>
+          <p class="arch-step-desc">Vectorización + Chi²</p>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-step">
+          <div class="arch-icon">🧠</div>
+          <p class="arch-step-title">Clasificador ML</p>
+          <p class="arch-step-desc">LR / SVM</p>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-step">
+          <div class="arch-icon">🤖</div>
+          <p class="arch-step-title">Agente</p>
+          <p class="arch-step-desc">Acción geoespacial</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTENTS TABLE -->
+    <section class="card">
+      <h2 class="card-title">🗺️ Intents y Agentes</h2>
+      <div class="table-wrap">
+        <table class="intents-table" id="intentsTable">
+          <thead>
+            <tr>
+              <th>Intent</th>
+              <th>Agente activado</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody id="intentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>GeoIntent Classifier · Clasificación de Intención para Agentes Geoespaciales · TF-IDF + ML</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

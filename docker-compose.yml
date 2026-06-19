@@ -1,0 +1,71 @@
+version: "3.9"
+
+# ============================================================
+# GeoIntent Classifier — Docker Compose
+# Orquesta: backend (FastAPI) + frontend (Nginx)
+#
+# Uso:
+#   Entrenamiento: docker-compose run --rm backend python main.py --train
+#   Producción:    docker-compose up --build
+#   Solo backend:  docker-compose up backend
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # BACKEND — FastAPI + Modelo ML
+  # ----------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: geointent_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MODEL_PATH=/app/models/saved/best_model.pkl
+      - ENCODER_PATH=/app/models/saved/label_encoder.pkl
+      - PYTHONPATH=/app
+    volumes:
+      # Persistir modelos entrenados fuera del contenedor
+      - ./models:/app/models
+      # Persistir reportes y figuras
+      - ./reports:/app/reports
+      # Persistir datos
+      - ./data:/app/data
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - geointent_net
+
+  # ----------------------------------------------------------
+  # FRONTEND — Nginx sirviendo HTML/CSS/JS estático
+  # ----------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: geointent_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - geointent_net
+
+# ----------------------------------------------------------
+# RED INTERNA
+# ----------------------------------------------------------
+networks:
+  geointent_net:
+    driver: bridge
+    name: geointent_network

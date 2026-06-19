@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Entornos virtuales
+.env
+venv/
+env/
+.venv/
+
+# Modelos entrenados (pesados para git)
+models/saved/*.pkl
+models/saved/*.joblib
+
+# Datos crudos y procesados (regenerables)
+data/raw/*.csv
+data/processed/*.csv
+data/augmented/*.csv
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Reportes generados
+reports/figures/*.png
+reports/metrics/*.csv
+reports/metrics/*.json
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
